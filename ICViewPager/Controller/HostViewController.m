@@ -49,7 +49,7 @@
 
 #pragma mark - ViewPagerDataSource
 - (NSUInteger)numberOfTabsForViewPager:(ViewPagerController *)viewPager {
-    return 2;
+    return 5;
 }
 - (UIView *)viewPager:(ViewPagerController *)viewPager viewForTabAtIndex:(NSUInteger)index {
     
@@ -80,9 +80,9 @@
         case ViewPagerOptionStartFromSecondTab:
             return 0.0;
         case ViewPagerOptionCenterCurrentTab:
-            return 1.0;
-        case ViewPagerOptionTabLocation:
             return 0.0;
+        case ViewPagerOptionTabLocation:
+            return 1.0;
         case ViewPagerOptionTabHeight:
             return 32.0;
         case ViewPagerOptionTabOffset:
