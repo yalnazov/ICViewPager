@@ -346,64 +346,69 @@
     __weak UIPageViewController *weakPageViewController = self.pageViewController;
     __weak ViewPagerController *weakSelf = self;
     
-    if (activeContentIndex == self.activeContentIndex) {
-        
-        [self.pageViewController setViewControllers:@[viewController]
-                                          direction:UIPageViewControllerNavigationDirectionForward
-                                           animated:NO
-                                         completion:nil];
-        
-    } else if (!(activeContentIndex + 1 == self.activeContentIndex || activeContentIndex - 1 == self.activeContentIndex)) {
-        
-        [self.pageViewController setViewControllers:@[viewController]
-                                          direction:(activeContentIndex < self.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
-                                           animated:YES
-                                         completion:^(BOOL completed) {
-                                             
-                                             weakSelf.animatingToTab = NO;
-                                             
-                                             // Set the current page again to obtain synchronisation between tabs and content
-                                             dispatch_async(dispatch_get_main_queue(), ^{
-                                                 [weakPageViewController setViewControllers:@[viewController]
-                                                                                  direction:(activeContentIndex < weakSelf.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
-                                                                                   animated:NO
-                                                                                 completion:nil];
-                                             });
-                                         }];
-        
-    } else {
-        
-        [self.pageViewController setViewControllers:@[viewController]
-                                          direction:(activeContentIndex < self.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
-                                           animated:YES
-                                         completion:nil];
-    }
-    
-    // Clean out of sight contents
-    NSInteger index;
-    index = self.activeContentIndex - 1;
-    if (index >= 0 &&
-        index != activeContentIndex &&
-        index != activeContentIndex - 1)
-    {
-        [self.contents replaceObjectAtIndex:index withObject:[NSNull null]];
-    }
-    index = self.activeContentIndex;
-    if (index != activeContentIndex - 1 &&
-        index != activeContentIndex &&
-        index != activeContentIndex + 1)
-    {
-        [self.contents replaceObjectAtIndex:index withObject:[NSNull null]];
-    }
-    index = self.activeContentIndex + 1;
-    if (index < self.contents.count &&
-        index != activeContentIndex &&
-        index != activeContentIndex + 1)
-    {
-        [self.contents replaceObjectAtIndex:index withObject:[NSNull null]];
-    }
-    
-    _activeContentIndex = activeContentIndex;
+	if(viewController) {
+	
+		if (activeContentIndex == self.activeContentIndex) {
+			
+			[self.pageViewController setViewControllers:@[viewController]
+											  direction:UIPageViewControllerNavigationDirectionForward
+											   animated:NO
+											 completion:nil];
+			
+		} else if (!(activeContentIndex + 1 == self.activeContentIndex || activeContentIndex - 1 == self.activeContentIndex)) {
+			
+			
+			[self.pageViewController setViewControllers:@[viewController]
+											  direction:(activeContentIndex < self.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
+											   animated:YES
+											 completion:^(BOOL completed) {
+												 
+												 weakSelf.animatingToTab = NO;
+												 
+												 // Set the current page again to obtain synchronisation between tabs and content
+												 dispatch_async(dispatch_get_main_queue(), ^{
+													 [weakPageViewController setViewControllers:@[viewController]
+																					  direction:(activeContentIndex < weakSelf.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
+																					   animated:NO
+																					 completion:nil];
+												 });
+											 }];
+			
+		} else {
+			
+			[self.pageViewController setViewControllers:@[viewController]
+											  direction:(activeContentIndex < self.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
+											   animated:YES
+											 completion:nil];
+		}
+	
+		
+		// Clean out of sight contents
+		NSInteger index;
+		index = self.activeContentIndex - 1;
+		if (index >= 0 &&
+			index != activeContentIndex &&
+			index != activeContentIndex - 1)
+		{
+			[self.contents replaceObjectAtIndex:index withObject:[NSNull null]];
+		}
+		index = self.activeContentIndex;
+		if (index != activeContentIndex - 1 &&
+			index != activeContentIndex &&
+			index != activeContentIndex + 1)
+		{
+			[self.contents replaceObjectAtIndex:index withObject:[NSNull null]];
+		}
+		index = self.activeContentIndex + 1;
+		if (index < self.contents.count &&
+			index != activeContentIndex &&
+			index != activeContentIndex + 1)
+		{
+			[self.contents replaceObjectAtIndex:index withObject:[NSNull null]];
+		}
+		
+		_activeContentIndex = activeContentIndex;
+	}
 }
 
 #pragma mark - Getters
