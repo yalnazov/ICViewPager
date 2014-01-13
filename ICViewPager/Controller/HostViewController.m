@@ -21,6 +21,7 @@
     
     self.dataSource = self;
     self.delegate = self;
+    self.indicatorWidth = 108.0;
     
     self.title = @"View Pager";
     
@@ -90,15 +91,15 @@
         case ViewPagerOptionTabWidth:
             return 108.0;
         case ViewPagerOptionFixFormerTabsPositions:
-            return 1.0;
+            return 0.0;
         case ViewPagerOptionFixLatterTabsPositions:
-            return 1.0;
+            return 0.0;
         default:
             return value;
     }
 }
-- (UIColor *)viewPager:(ViewPagerController *)viewPager colorForComponent:(ViewPagerComponent)component withDefault:(UIColor *)color {
-    
+- (UIColor *)viewPager:(ViewPagerController *)viewPager colorForComponent:(ViewPagerComponent)component withDefault:(UIColor *)color
+{
     switch (component) {
         case ViewPagerIndicator:
             return [[UIColor redColor] colorWithAlphaComponent:0.64];
