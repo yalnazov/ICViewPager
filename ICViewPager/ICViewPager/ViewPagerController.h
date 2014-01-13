@@ -49,6 +49,8 @@ typedef NS_ENUM(NSUInteger, ViewPagerComponent) {
 
 @interface ViewPagerController : UIViewController
 
+@property (nonatomic, assign) CGFloat indicatorWidth;
+
 /**
  * The object that acts as the data source of the receiving viewPager
  * @discussion The data source must adopt the ViewPagerDataSource protocol. The data source is not retained.

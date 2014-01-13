@@ -55,42 +55,6 @@
     [bezierPath stroke];
 }
 @end
-#pragma mark - ScrollIndicator
-@class ScrollIndicator;
-@interface ScrollIndicator : UIView
-@property (nonatomic) UIColor *scrollIndicatorColor;
-@end
-@implementation ScrollIndicator
-- (id)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        self.backgroundColor = [UIColor clearColor];
-    }
-    return self;
-}
-- (void)update:(BOOL)selected {
-	// Update view as state changed
-    [self setNeedsDisplay];
-}
-- (void)drawRect:(CGRect)rect {
-    
-	@autoreleasepool {
-    UIBezierPath *bezierPath;
-	// Draw an indicator line if tab is selected
-    
-        
-	bezierPath = [UIBezierPath bezierPath];
-        
-	// Draw the indicator
-	[bezierPath moveToPoint:CGPointMake(0.0, CGRectGetHeight(rect) - 1.0)];
-	[bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), CGRectGetHeight(rect) - 1.0)];
-	[bezierPath setLineWidth:5.0];
-	[self.scrollIndicatorColor setStroke];
-	[bezierPath stroke];
-	}
-}
-
-@end
 
 #pragma mark - ViewPagerController
 @interface ViewPagerController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
@@ -100,7 +64,7 @@
 @property UIView *contentView;
 
 //ScrollIndicator stuff
-@property ScrollIndicator *scrollInd;
+@property UIView *scrollInd;
 
 @property UIPageViewController *pageViewController;
 @property (assign) id<UIScrollViewDelegate> actualDelegate;
@@ -723,10 +687,12 @@
     [self selectTabAtIndex:index];
 	
 	//add ScrollIndicator and set it most left
-	self.scrollInd = [[ScrollIndicator alloc]initWithFrame:CGRectMake(36.0, 12.00, 108.0/*fix*/, 20.0)];
-	self.scrollInd.scrollIndicatorColor = [UIColor blueColor];
-	[self.tabsView addSubview:self.scrollInd];
-	self.tabsView.bounces = NO;
+    if ( nil == self.scrollInd ) {
+        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(36.0, CGRectGetWidth(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+        self.scrollInd.backgroundColor = [UIColor blueColor];
+        [self.tabsView addSubview:self.scrollInd];
+        self.tabsView.bounces = NO;
+    }
     // Set setup done
     self.defaultSetupDone = YES;
 }
@@ -838,7 +804,7 @@
 
 		NSLog(@"Frame origin: x: %f; y: %f@", frame.origin.x, frame.origin.y);
 		//draw scroll indicator with hard-coded values for test
-		[self.scrollInd setFrame:CGRectMake(frame.origin.x, 13.00, 108.0/*fix*/, 20.0)];
+		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
 		
         if ([self.centerCurrentTab boolValue]) {
             
