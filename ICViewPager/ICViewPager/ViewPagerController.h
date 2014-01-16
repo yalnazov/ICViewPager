@@ -50,6 +50,7 @@ typedef NS_ENUM(NSUInteger, ViewPagerComponent) {
 @interface ViewPagerController : UIViewController
 
 @property (nonatomic, assign) CGFloat indicatorWidth;
+@property (nonatomic, assign) BOOL hasNavigationBar;
 
 /**
  * The object that acts as the data source of the receiving viewPager

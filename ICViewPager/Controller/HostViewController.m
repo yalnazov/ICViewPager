@@ -22,6 +22,7 @@
     self.dataSource = self;
     self.delegate = self;
     self.indicatorWidth = 108.0;
+    self.hasNavigationBar = YES;
     
     self.title = @"View Pager";
     
@@ -102,9 +103,11 @@
 {
     switch (component) {
         case ViewPagerIndicator:
-            return [[UIColor redColor] colorWithAlphaComponent:0.64];
+            return [[UIColor blueColor] colorWithAlphaComponent:0.64];
         case ViewPagerTabsView:
             return [[UIColor greenColor] colorWithAlphaComponent:0.64];
+        case ViewPagerContent:
+            return [[UIColor darkGrayColor] colorWithAlphaComponent:0.32];
         default:
             return color;
     }

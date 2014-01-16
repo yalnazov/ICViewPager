@@ -29,31 +29,31 @@
     }
     return self;
 }
-- (void)setSelected:(BOOL)selected {
-    _selected = selected;
-    // Update view as state changed
-    [self setNeedsDisplay];
-}
-- (void)drawRect:(CGRect)rect {
-    
-    UIBezierPath *bezierPath;
-    
-    // Draw top line
-    bezierPath = [UIBezierPath bezierPath];
-    [bezierPath moveToPoint:CGPointMake(0.0, 0.0)];
-    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), 0.0)];
-    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
-    [bezierPath setLineWidth:1.0];
-    [bezierPath stroke];
-    
-    // Draw bottom line
-    bezierPath = [UIBezierPath bezierPath];
-    [bezierPath moveToPoint:CGPointMake(0.0, CGRectGetHeight(rect))];
-    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
-    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
-    [bezierPath setLineWidth:1.0];
-    [bezierPath stroke];
-}
+//- (void)setSelected:(BOOL)selected {
+//    _selected = selected;
+//    // Update view as state changed
+//    [self setNeedsDisplay];
+//}
+//- (void)drawRect:(CGRect)rect {
+//    
+//    UIBezierPath *bezierPath;
+//    
+//    // Draw top line
+//    bezierPath = [UIBezierPath bezierPath];
+//    [bezierPath moveToPoint:CGPointMake(0.0, 0.0)];
+//    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), 0.0)];
+//    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
+//    [bezierPath setLineWidth:1.0];
+//    [bezierPath stroke];
+//    
+//    // Draw bottom line
+//    bezierPath = [UIBezierPath bezierPath];
+//    [bezierPath moveToPoint:CGPointMake(0.0, CGRectGetHeight(rect))];
+//    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
+//    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
+//    [bezierPath setLineWidth:1.0];
+//    [bezierPath stroke];
+//}
 @end
 
 #pragma mark - ViewPagerController
@@ -150,7 +150,7 @@
 - (void)layoutSubviews {
     
     CGFloat topLayoutGuide = 0.0;
-    if (IOS_VERSION_7) {
+    if ( IOS_VERSION_7 && self.hasNavigationBar ) {
         topLayoutGuide = 20.0;
         if (self.navigationController && !self.navigationController.navigationBarHidden) {
             topLayoutGuide += self.navigationController.navigationBar.frame.size.height;
@@ -175,7 +175,7 @@
 #pragma mark - IBAction
 - (IBAction)handleTapGesture:(id)sender {
     
-    //self.animatingToTab = YES;
+    self.animatingToTab = YES;
     
     // Get the desired page's index
     UITapGestureRecognizer *tapGestureRecognizer = (UITapGestureRecognizer *)sender;
@@ -688,7 +688,7 @@
 	
 	//add ScrollIndicator and set it most left
     if ( nil == self.scrollInd ) {
-        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(36.0, CGRectGetWidth(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(36.0, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
         self.scrollInd.backgroundColor = [UIColor blueColor];
         [self.tabsView addSubview:self.scrollInd];
         self.tabsView.bounces = NO;
@@ -793,17 +793,20 @@
         [self.actualDelegate scrollViewDidScroll:scrollView];
     }
     
-    if (![self isAnimatingToTab]) {
-        UIView *tabView = [self tabViewAtIndex:self.activeTabIndex];
-        
-        // Get the related tab view position
-        CGRect frame = tabView.frame;
-        
+    UIView *tabView = [self tabViewAtIndex:self.activeTabIndex];
+    
+    // Get the related tab view position
+    CGRect frame = tabView.frame;
+    
+    if ([self isAnimatingToTab]) {
+        //draw scroll indicator
+		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+    }
+    else {
         CGFloat movedRatio = (scrollView.contentOffset.x / CGRectGetWidth(scrollView.frame)) - 1;
         frame.origin.x += movedRatio * CGRectGetWidth(frame);
-
-		NSLog(@"Frame origin: x: %f; y: %f@", frame.origin.x, frame.origin.y);
-		//draw scroll indicator with hard-coded values for test
+        
+		//draw scroll indicator
 		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
 		
         if ([self.centerCurrentTab boolValue]) {
@@ -826,11 +829,12 @@
         }
         
         [self.tabsView scrollRectToVisible:frame animated:NO];
+
     }
-	
-	
 }
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    self.animatingToTab = NO;
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
         [self.actualDelegate scrollViewWillBeginDragging:scrollView];
     }
