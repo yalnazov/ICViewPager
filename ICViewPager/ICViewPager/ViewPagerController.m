@@ -688,7 +688,7 @@
 	
 	//add ScrollIndicator and set it most left
     if ( nil == self.scrollInd ) {
-        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(36.0, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
         self.scrollInd.backgroundColor = [UIColor blueColor];
         [self.tabsView addSubview:self.scrollInd];
         self.tabsView.bounces = NO;
