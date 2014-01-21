@@ -11,6 +11,8 @@
 
 @interface HostViewController () <ViewPagerDataSource, ViewPagerDelegate>
 
+@property (nonatomic) NSUInteger numberOfTabs;
+
 @end
 
 @implementation HostViewController
@@ -38,6 +40,14 @@
         
         button;
     });
+    
+}
+- (void)viewDidAppear:(BOOL)animated {
+    
+    [super viewDidAppear:animated];
+    
+    [self performSelector:@selector(loadContent) withObject:nil afterDelay:3.0];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -45,19 +55,41 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Setters
+- (void)setNumberOfTabs:(NSUInteger)numberOfTabs {
+    
+    // Set numberOfTabs
+    _numberOfTabs = numberOfTabs;
+    
+    // Reload data
+    [self reloadData];
+    
+}
+
+#pragma mark - Helpers
 - (void)selectTabWithNumberFive {
     [self selectTabAtIndex:5];
+}
+- (void)loadContent {
+    self.numberOfTabs = 10;
+}
+
+#pragma mark - Interface Orientation Changes
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    
+    // Update changes after screen rotates
+    [self performSelector:@selector(setNeedsReloadOptions) withObject:nil afterDelay:duration];
 }
 
 #pragma mark - ViewPagerDataSource
 - (NSUInteger)numberOfTabsForViewPager:(ViewPagerController *)viewPager {
-    return 5;
+    return self.numberOfTabs;
 }
 - (UIView *)viewPager:(ViewPagerController *)viewPager viewForTabAtIndex:(NSUInteger)index {
     
     UILabel *label = [UILabel new];
     label.backgroundColor = [UIColor clearColor];
-    label.font = [UIFont systemFontOfSize:13.0];
+    label.font = [UIFont systemFontOfSize:12.0];
     label.text = [NSString stringWithFormat:@"Tab #%i", index];
     label.textAlignment = NSTextAlignmentCenter;
     label.textColor = [UIColor blackColor];
@@ -86,11 +118,11 @@
         case ViewPagerOptionTabLocation:
             return 1.0;
         case ViewPagerOptionTabHeight:
-            return 32.0;
+            return 49.0;
         case ViewPagerOptionTabOffset:
             return 36.0;
         case ViewPagerOptionTabWidth:
-            return 108.0;
+            return UIInterfaceOrientationIsLandscape(self.interfaceOrientation) ? 128.0 : 96.0;
         case ViewPagerOptionFixFormerTabsPositions:
             return 0.0;
         case ViewPagerOptionFixLatterTabsPositions:
@@ -105,7 +137,7 @@
         case ViewPagerIndicator:
             return [[UIColor blueColor] colorWithAlphaComponent:0.64];
         case ViewPagerTabsView:
-            return [[UIColor greenColor] colorWithAlphaComponent:0.64];
+            return [[UIColor lightGrayColor] colorWithAlphaComponent:0.32];
         case ViewPagerContent:
             return [[UIColor darkGrayColor] colorWithAlphaComponent:0.32];
         default:
