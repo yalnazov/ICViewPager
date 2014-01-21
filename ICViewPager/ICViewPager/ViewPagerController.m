@@ -72,44 +72,31 @@
     }
     return self;
 }
-- (void)setSelected:(BOOL)selected {
-    _selected = selected;
-    // Update view as state changed
-    [self setNeedsDisplay];
-}
-- (void)drawRect:(CGRect)rect {
-    
-    UIBezierPath *bezierPath;
-    
-    // Draw top line
-    bezierPath = [UIBezierPath bezierPath];
-    [bezierPath moveToPoint:CGPointMake(0.0, 0.0)];
-    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), 0.0)];
-    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
-    [bezierPath setLineWidth:1.0];
-    [bezierPath stroke];
-    
-    // Draw bottom line
-    bezierPath = [UIBezierPath bezierPath];
-    [bezierPath moveToPoint:CGPointMake(0.0, CGRectGetHeight(rect))];
-    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
-    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
-    [bezierPath setLineWidth:1.0];
-    [bezierPath stroke];
-    
-    // Draw an indicator line if tab is selected
-    if (self.selected) {
-        
-        bezierPath = [UIBezierPath bezierPath];
-        
-        // Draw the indicator
-        [bezierPath moveToPoint:CGPointMake(0.0, CGRectGetHeight(rect) - 1.0)];
-        [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), CGRectGetHeight(rect) - 1.0)];
-        [bezierPath setLineWidth:5.0];
-        [self.indicatorColor setStroke];
-        [bezierPath stroke];
-    }
-}
+//- (void)setSelected:(BOOL)selected {
+//    _selected = selected;
+//    // Update view as state changed
+//    [self setNeedsDisplay];
+//}
+//- (void)drawRect:(CGRect)rect {
+//    
+//    UIBezierPath *bezierPath;
+//    
+//    // Draw top line
+//    bezierPath = [UIBezierPath bezierPath];
+//    [bezierPath moveToPoint:CGPointMake(0.0, 0.0)];
+//    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), 0.0)];
+//    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
+//    [bezierPath setLineWidth:1.0];
+//    [bezierPath stroke];
+//    
+//    // Draw bottom line
+//    bezierPath = [UIBezierPath bezierPath];
+//    [bezierPath moveToPoint:CGPointMake(0.0, CGRectGetHeight(rect))];
+//    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
+//    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
+//    [bezierPath setLineWidth:1.0];
+//    [bezierPath stroke];
+//}
 @end
 
 #pragma mark - ViewPagerController
@@ -118,6 +105,9 @@
 // Tab and content stuff
 @property UIScrollView *tabsView;
 @property UIView *contentView;
+
+//ScrollIndicator stuff
+@property UIView *scrollInd;
 
 @property UIPageViewController *pageViewController;
 @property (assign) id<UIScrollViewDelegate> actualDelegate;
@@ -203,7 +193,7 @@
 - (void)layoutSubviews {
     
     CGFloat topLayoutGuide = 0.0;
-    if (IOS_VERSION_7) {
+    if ( IOS_VERSION_7 && self.hasNavigationBar ) {
         topLayoutGuide = 20.0;
         if (self.navigationController && !self.navigationController.navigationBarHidden) {
             topLayoutGuide += self.navigationController.navigationBar.frame.size.height;
@@ -797,7 +787,8 @@
         
         [self.view insertSubview:self.tabsView atIndex:0];
     }
-    
+	
+	
     // Add tab views to _tabsView
     CGFloat contentSizeWidth = 0;
     
@@ -860,7 +851,14 @@
     // Select starting tab
     NSUInteger index = [self.startFromSecondTab boolValue] ? 1 : 0;
     [self selectTabAtIndex:index];
-    
+	
+	//add ScrollIndicator and set it most left
+    if ( nil == self.scrollInd ) {
+        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+        self.scrollInd.backgroundColor = [UIColor blueColor];
+        [self.tabsView addSubview:self.scrollInd];
+        self.tabsView.bounces = NO;
+    }
     // Set setup done
     self.defaultSetupDone = YES;
 }
@@ -962,15 +960,22 @@
         [self.actualDelegate scrollViewDidScroll:scrollView];
     }
     
-    if (![self isAnimatingToTab]) {
-        UIView *tabView = [self tabViewAtIndex:self.activeTabIndex];
-        
-        // Get the related tab view position
-        CGRect frame = tabView.frame;
-        
+    UIView *tabView = [self tabViewAtIndex:self.activeTabIndex];
+    
+    // Get the related tab view position
+    CGRect frame = tabView.frame;
+    
+    if ([self isAnimatingToTab]) {
+        //draw scroll indicator
+		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+    }
+    else {
         CGFloat movedRatio = (scrollView.contentOffset.x / CGRectGetWidth(scrollView.frame)) - 1;
         frame.origin.x += movedRatio * CGRectGetWidth(frame);
         
+		//draw scroll indicator
+		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+		
         if ([self.centerCurrentTab boolValue]) {
             
             frame.origin.x += (frame.size.width / 2);
@@ -991,9 +996,12 @@
         }
         
         [self.tabsView scrollRectToVisible:frame animated:NO];
+
     }
 }
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    self.animatingToTab = NO;
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
         [self.actualDelegate scrollViewWillBeginDragging:scrollView];
     }

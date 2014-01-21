@@ -23,6 +23,8 @@
     
     self.dataSource = self;
     self.delegate = self;
+    self.indicatorWidth = 108.0;
+    self.hasNavigationBar = YES;
     
     self.title = @"View Pager";
     
@@ -112,9 +114,9 @@
         case ViewPagerOptionStartFromSecondTab:
             return 0.0;
         case ViewPagerOptionCenterCurrentTab:
-            return 1.0;
-        case ViewPagerOptionTabLocation:
             return 0.0;
+        case ViewPagerOptionTabLocation:
+            return 1.0;
         case ViewPagerOptionTabHeight:
             return 49.0;
         case ViewPagerOptionTabOffset:
@@ -122,18 +124,18 @@
         case ViewPagerOptionTabWidth:
             return UIInterfaceOrientationIsLandscape(self.interfaceOrientation) ? 128.0 : 96.0;
         case ViewPagerOptionFixFormerTabsPositions:
-            return 1.0;
+            return 0.0;
         case ViewPagerOptionFixLatterTabsPositions:
-            return 1.0;
+            return 0.0;
         default:
             return value;
     }
 }
-- (UIColor *)viewPager:(ViewPagerController *)viewPager colorForComponent:(ViewPagerComponent)component withDefault:(UIColor *)color {
-    
+- (UIColor *)viewPager:(ViewPagerController *)viewPager colorForComponent:(ViewPagerComponent)component withDefault:(UIColor *)color
+{
     switch (component) {
         case ViewPagerIndicator:
-            return [[UIColor redColor] colorWithAlphaComponent:0.64];
+            return [[UIColor blueColor] colorWithAlphaComponent:0.64];
         case ViewPagerTabsView:
             return [[UIColor lightGrayColor] colorWithAlphaComponent:0.32];
         case ViewPagerContent:
