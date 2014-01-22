@@ -222,7 +222,7 @@
     UITapGestureRecognizer *tapGestureRecognizer = (UITapGestureRecognizer *)sender;
     UIView *tabView = tapGestureRecognizer.view;
     __block NSUInteger index = [self.tabs indexOfObject:tabView];
-    
+    NSLog(@"handle tap gesture index:%d", index);
     // Select the tab
     [self selectTabAtIndex:index];
 }
@@ -343,7 +343,7 @@
     [self.tabsView scrollRectToVisible:frame animated:YES];
 }
 - (void)setActiveContentIndex:(NSUInteger)activeContentIndex {
-    
+    NSLog(@"content index %d",activeContentIndex);
     // Get the desired viewController
     UIViewController *viewController = [self viewControllerAtIndex:activeContentIndex];
     
@@ -561,7 +561,7 @@
     [self defaultSetup];
 }
 - (void)selectTabAtIndex:(NSUInteger)index {
-    
+    NSLog(@"Tab Index is %d", index);
     if (index >= self.tabCount) {
         return;
     }
@@ -783,6 +783,8 @@
         self.tabsView.scrollsToTop = NO;
         self.tabsView.showsHorizontalScrollIndicator = NO;
         self.tabsView.showsVerticalScrollIndicator = NO;
+		self.tabsView.bounces = NO;
+		self.tabsView.decelerationRate = UIScrollViewDecelerationRateFast;
         self.tabsView.tag = kTabViewTag;
         
         [self.view insertSubview:self.tabsView atIndex:0];
@@ -815,6 +817,15 @@
         [self.tabsView addSubview:tabView];
         
         contentSizeWidth += CGRectGetWidth(tabView.frame);
+		
+		float sizeOfContent = 0;
+		UIView *lLast = [self.tabsView.subviews lastObject];
+		NSInteger wd = lLast.frame.origin.y;
+		NSInteger ht = lLast.frame.size.height;
+		
+		sizeOfContent = wd+ht;
+		
+		self.tabsView.contentSize = CGSizeMake(self.tabsView.frame.size.width, sizeOfContent);
         
         // To capture tap events
         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
@@ -927,8 +938,12 @@
     return [self.contents objectAtIndex:index];
 }
 - (NSUInteger)indexForViewController:(UIViewController *)viewController {
-    
-    return [self.contents indexOfObject:viewController];
+    NSLog(@"%@",viewController);
+	int index = [self.contents indexOfObject:viewController];
+	if(index > [self.tabs count]) {
+		index = self.activeContentIndex;
+	}
+	return index;
 }
 
 #pragma mark - UIPageViewControllerDataSource
@@ -950,6 +965,7 @@
     
     // Select tab
     NSUInteger index = [self indexForViewController:viewController];
+	NSLog(@"page view controller index:%d", index);
     [self selectTabAtIndex:index];
 }
 
