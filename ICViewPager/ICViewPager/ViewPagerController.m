@@ -72,31 +72,6 @@
     }
     return self;
 }
-//- (void)setSelected:(BOOL)selected {
-//    _selected = selected;
-//    // Update view as state changed
-//    [self setNeedsDisplay];
-//}
-//- (void)drawRect:(CGRect)rect {
-//    
-//    UIBezierPath *bezierPath;
-//    
-//    // Draw top line
-//    bezierPath = [UIBezierPath bezierPath];
-//    [bezierPath moveToPoint:CGPointMake(0.0, 0.0)];
-//    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), 0.0)];
-//    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
-//    [bezierPath setLineWidth:1.0];
-//    [bezierPath stroke];
-//    
-//    // Draw bottom line
-//    bezierPath = [UIBezierPath bezierPath];
-//    [bezierPath moveToPoint:CGPointMake(0.0, CGRectGetHeight(rect))];
-//    [bezierPath addLineToPoint:CGPointMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
-//    [[UIColor colorWithWhite:197.0/255.0 alpha:0.75] setStroke];
-//    [bezierPath setLineWidth:1.0];
-//    [bezierPath stroke];
-//}
 @end
 
 #pragma mark - ViewPagerController
@@ -127,7 +102,6 @@
 @property (nonatomic) NSNumber *fixLatterTabsPositions;
 
 @property (nonatomic) NSUInteger tabCount;
-@property (nonatomic) NSUInteger activeTabIndex;
 @property (nonatomic) NSUInteger activeContentIndex;
 
 @property (getter = isAnimatingToTab, assign) BOOL animatingToTab;
@@ -343,7 +317,6 @@
     [self.tabsView scrollRectToVisible:frame animated:YES];
 }
 - (void)setActiveContentIndex:(NSUInteger)activeContentIndex {
-    NSLog(@"content index %d",activeContentIndex);
     // Get the desired viewController
     UIViewController *viewController = [self viewControllerAtIndex:activeContentIndex];
     
