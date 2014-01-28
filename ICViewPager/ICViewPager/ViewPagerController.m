@@ -865,7 +865,7 @@
 	
 	//add ScrollIndicator and set it most left
     if ( nil == self.scrollInd ) {
-        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.tabsView.bounds) - self.indicatorHeight, self.indicatorWidth, self.indicatorHeight)];
         self.scrollInd.backgroundColor = self.indicatorColor;
         [self.tabsView addSubview:self.scrollInd];
         self.tabsView.bounces = NO;
@@ -983,14 +983,14 @@
     
     if ([self isAnimatingToTab]) {
         //draw scroll indicator
-		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - self.indicatorHeight, self.indicatorWidth, self.indicatorHeight)];
     }
     else {
         CGFloat movedRatio = (scrollView.contentOffset.x / CGRectGetWidth(scrollView.frame)) - 1;
         frame.origin.x += movedRatio * CGRectGetWidth(frame);
         
 		//draw scroll indicator
-		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - self.indicatorHeight, self.indicatorWidth, self.indicatorHeight)];
 		
         if ([self.centerCurrentTab boolValue]) {
             
