@@ -334,7 +334,7 @@
         
         [self.pageViewController setViewControllers:@[viewController]
                                           direction:UIPageViewControllerNavigationDirectionForward
-                                           animated:NO
+                                           animated:YES
                                          completion:^(BOOL completed) {
                                              weakSelf.animatingToTab = NO;
                                          }];
@@ -352,7 +352,7 @@
                                              dispatch_async(dispatch_get_main_queue(), ^{
                                                  [weakPageViewController setViewControllers:@[viewController]
                                                                                   direction:(activeContentIndex < weakSelf.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
-                                                                                   animated:NO
+                                                                                   animated:YES
                                                                                  completion:nil];
                                              });
                                          }];
