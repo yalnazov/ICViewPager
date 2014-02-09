@@ -24,6 +24,7 @@
     self.dataSource = self;
     self.delegate = self;
     self.indicatorWidth = 108.0;
+	self.indicatorHeight = 5.0;
     self.hasNavigationBar = YES;
     
     self.title = @"View Pager";

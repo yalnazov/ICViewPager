@@ -102,7 +102,6 @@
 @property (nonatomic) NSNumber *fixLatterTabsPositions;
 
 @property (nonatomic) NSUInteger tabCount;
-@property (nonatomic) NSUInteger activeTabIndex;
 @property (nonatomic) NSUInteger activeContentIndex;
 
 @property (getter = isAnimatingToTab, assign) BOOL animatingToTab;
@@ -197,7 +196,7 @@
     UITapGestureRecognizer *tapGestureRecognizer = (UITapGestureRecognizer *)sender;
     UIView *tabView = tapGestureRecognizer.view;
     __block NSUInteger index = [self.tabs indexOfObject:tabView];
-    
+    NSLog(@"handle tap gesture index:%d", index);
     // Select the tab
     [self selectTabAtIndex:index];
 }
@@ -318,7 +317,6 @@
     [self.tabsView scrollRectToVisible:frame animated:YES];
 }
 - (void)setActiveContentIndex:(NSUInteger)activeContentIndex {
-    
     // Get the desired viewController
     UIViewController *viewController = [self viewControllerAtIndex:activeContentIndex];
     
@@ -336,7 +334,7 @@
         
         [self.pageViewController setViewControllers:@[viewController]
                                           direction:UIPageViewControllerNavigationDirectionForward
-                                           animated:NO
+                                           animated:YES
                                          completion:^(BOOL completed) {
                                              weakSelf.animatingToTab = NO;
                                          }];
@@ -354,7 +352,7 @@
                                              dispatch_async(dispatch_get_main_queue(), ^{
                                                  [weakPageViewController setViewControllers:@[viewController]
                                                                                   direction:(activeContentIndex < weakSelf.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
-                                                                                   animated:NO
+                                                                                   animated:YES
                                                                                  completion:nil];
                                              });
                                          }];
@@ -536,7 +534,7 @@
     [self defaultSetup];
 }
 - (void)selectTabAtIndex:(NSUInteger)index {
-    
+    NSLog(@"Tab Index is %d", index);
     if (index >= self.tabCount) {
         return;
     }
@@ -758,6 +756,8 @@
         self.tabsView.scrollsToTop = NO;
         self.tabsView.showsHorizontalScrollIndicator = NO;
         self.tabsView.showsVerticalScrollIndicator = NO;
+		self.tabsView.bounces = NO;
+		self.tabsView.decelerationRate = UIScrollViewDecelerationRateFast;
         self.tabsView.tag = kTabViewTag;
         
         [self.view insertSubview:self.tabsView atIndex:0];
@@ -790,6 +790,15 @@
         [self.tabsView addSubview:tabView];
         
         contentSizeWidth += CGRectGetWidth(tabView.frame);
+		
+		float sizeOfContent = 0;
+		UIView *lLast = [self.tabsView.subviews lastObject];
+		NSInteger wd = lLast.frame.origin.y;
+		NSInteger ht = lLast.frame.size.height;
+		
+		sizeOfContent = wd+ht;
+		
+		self.tabsView.contentSize = CGSizeMake(self.tabsView.frame.size.width, sizeOfContent);
         
         // To capture tap events
         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
@@ -829,8 +838,8 @@
 	
 	//add ScrollIndicator and set it most left
     if ( nil == self.scrollInd ) {
-        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
-        self.scrollInd.backgroundColor = [UIColor blueColor];
+        self.scrollInd = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.tabsView.bounds) - self.indicatorHeight, self.indicatorWidth, self.indicatorHeight)];
+        self.scrollInd.backgroundColor = self.indicatorColor;
         [self.tabsView addSubview:self.scrollInd];
         self.tabsView.bounces = NO;
     }
@@ -902,8 +911,12 @@
     return [self.contents objectAtIndex:index];
 }
 - (NSUInteger)indexForViewController:(UIViewController *)viewController {
-    
-    return [self.contents indexOfObject:viewController];
+    NSLog(@"%@",viewController);
+	int index = [self.contents indexOfObject:viewController];
+	if(index > [self.tabs count]) {
+		index = self.activeContentIndex;
+	}
+	return index;
 }
 
 #pragma mark - UIPageViewControllerDataSource
@@ -925,6 +938,7 @@
     
     // Select tab
     NSUInteger index = [self indexForViewController:viewController];
+	NSLog(@"page view controller index:%d", index);
     [self selectTabAtIndex:index];
 }
 
@@ -942,14 +956,14 @@
     
     if ([self isAnimatingToTab]) {
         //draw scroll indicator
-		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - self.indicatorHeight, self.indicatorWidth, self.indicatorHeight)];
     }
     else {
         CGFloat movedRatio = (scrollView.contentOffset.x / CGRectGetWidth(scrollView.frame)) - 1;
         frame.origin.x += movedRatio * CGRectGetWidth(frame);
         
 		//draw scroll indicator
-		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - 2.0, self.indicatorWidth, 2.0)];
+		[self.scrollInd setFrame:CGRectMake(frame.origin.x, CGRectGetHeight(self.tabsView.bounds) - self.indicatorHeight, self.indicatorWidth, self.indicatorHeight)];
 		
         if ([self.centerCurrentTab boolValue]) {
             
