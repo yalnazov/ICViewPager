@@ -196,7 +196,6 @@
     UITapGestureRecognizer *tapGestureRecognizer = (UITapGestureRecognizer *)sender;
     UIView *tabView = tapGestureRecognizer.view;
     __block NSUInteger index = [self.tabs indexOfObject:tabView];
-    NSLog(@"handle tap gesture index:%d", index);
     // Select the tab
     [self selectTabAtIndex:index];
 }
@@ -534,7 +533,6 @@
     [self defaultSetup];
 }
 - (void)selectTabAtIndex:(NSUInteger)index {
-    NSLog(@"Tab Index is %d", index);
     if (index >= self.tabCount) {
         return;
     }
@@ -911,8 +909,7 @@
     return [self.contents objectAtIndex:index];
 }
 - (NSUInteger)indexForViewController:(UIViewController *)viewController {
-    NSLog(@"%@",viewController);
-	int index = [self.contents indexOfObject:viewController];
+   	int index = [self.contents indexOfObject:viewController];
 	if(index > [self.tabs count]) {
 		index = self.activeContentIndex;
 	}
@@ -938,7 +935,6 @@
     
     // Select tab
     NSUInteger index = [self indexForViewController:viewController];
-	NSLog(@"page view controller index:%d", index);
     [self selectTabAtIndex:index];
 }
 
